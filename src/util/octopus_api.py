@@ -17,7 +17,7 @@ def octopus_api_get(date_start, date_end):
     """
     # dates in format of '2020-03-29T00:00Z' '2020-03-29T02:29Z'
     # Z is zulu time
-    # should return data every 30 mins
+    # should return data windows for every 30 mins
     # tarrif is currently hard coded to AGILE-24-10-01
     # region currently hard coded using tarrif_url
 
@@ -37,5 +37,4 @@ def octopus_api_get(date_start, date_end):
         each_time.pop('payment_method', None)
         time_data_dict[each_time['valid_from']] = each_time
 
-    # pprint(time_data_dict)
     return time_data_dict
