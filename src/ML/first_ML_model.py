@@ -8,24 +8,47 @@
 ===============================================================================
 """
 
-import os
-import pickle
+import numpy as np
 import pandas as pd
-from statsmodels.tsa.arima.model import ARIMA
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 # === Load data ===
-data = pd.read_csv("data/sample_data.csv", parse_dates=['date'], index_col='date')
+df = pd.read_csv("data/time_series.csv", parse_dates=["date"], index_col="date")
+series = df["value"].values
 
-# === Optional: ensure it's sorted ===
-data = data.sort_index()
+# === Convert to supervised format using sliding window ===
+def create_features(series, window_size=5):
+    X, y = [], []
+    for i in range(len(series) - window_size):
+        X.append(series[i:i + window_size])
+        y.append(series[i + window_size])
+    return np.array(X), np.array(y)
 
-# === Train a simple ARIMA model ===
-model = ARIMA(data['value'], order=(1, 1, 1))  # ARIMA(p,d,q)
-model_fit = model.fit()
+window_size = 5
+X, y = create_features(series, window_size)
 
-# === Save the model ===
-os.makedirs("models", exist_ok=True)
-with open("models/forecast_model.pkl", "wb") as f:
-    pickle.dump(model_fit, f)
+# === Train/test split ===
+split_train_val = int(len(X) * 0.75)
+split_val_test_neg = -int(len(X) * 0.15)
 
-print("Forecasting model trained and saved to models/forecast_model.pkl")
+X_train, X_val, X_test = X[:split_train_val], X[split_train_val:split_val_test_neg], X[split_val_test_neg:]
+y_train, y_val, y_test = y[:split_train_val], y[split_train_val:split_val_test_neg], y[split_val_test_neg:]
+
+# === Train model ===
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+# === Validation ===
+y_pred = model.predict(X_val)
+print("Test MSE:", mean_squared_error(y_val, y_pred))
+
+
+# === Testing ===
+print("===========================")
+print("this is feed into the predict statement")
+print(X_test.reshape(1, -1))
+next_value = model.predict(X_test.reshape(1, -1))[0]
+
+
+print(f"Predicted next value: {next_value:.2f}")
