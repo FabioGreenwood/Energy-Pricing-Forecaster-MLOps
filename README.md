@@ -1,6 +1,6 @@
 # Project Overview
 
-Personal project to create a **MLOps pipeline** for a home energy price forecaster. Currently the focus of this project is the **data/cloud engineering** and the ML model is a basic placeholder (due to time constraints), though there is a view to expand it going forward.
+Personal team project to create a **MLOps pipeline** for a home energy price forecaster. Currently the focus of this project is the **data/cloud engineering** and the ML model is a basic placeholder (due to time constraints), though there is a view to expand it going forward.
 
 **CI/CD** pipeline will be deployed in **AWS**, using **code-as-infrastructure (CID)** via **terraform**. The ML model will be deployed via **docker**.
 
