@@ -80,3 +80,9 @@ check-coverage:
 
 ## Run all checks
 run-checks: security-test run-black unit-test check-coverage
+
+
+## initial code for pushing docker item up
+push-docker-image:
+	$(aws ecr get-login-password | docker login --username AWS --password-stdin 686255942942.dkr.ecr.eu-west-2.amazonaws.com)
+	$(docker push 686255942942.dkr.ecr.eu-west-2.amazonaws.com/first-docker-image:latest)
