@@ -85,4 +85,32 @@ run-checks: security-test run-black unit-test check-coverage
 ## initial code for pushing docker item up
 push-docker-image:
 	$(aws ecr get-login-password | docker login --username AWS --password-stdin 686255942942.dkr.ecr.eu-west-2.amazonaws.com)
-	$(docker push 686255942942.dkr.ecr.eu-west-2.amazonaws.com/first-docker-image:latest)
+	$(aws ecr create-repository \
+  	--repository-name return-prediction \
+  	--image-scanning-configuration scanOnPush=true \
+  	--region eu-west-2) 
+	$(docker build -f docker/return_prediction/Dockerfile -t return-prediction .)
+	$(docker tag my-app 686255942942.dkr.ecr.us-east-1.amazonaws.com/my-app:latest)
+	$(docker push 686255942942.dkr.ecr.eu-west-2.amazonaws.com/return-prediction:latest)
+	$(aws ecs create-cluster --cluster-name general-cluster)
+	$(aws iam create-role \
+	  --role-name ecsTaskExecutionRole \
+	  --assume-role-policy-document file://docker//ecs-trust-policy.json)
+	$(aws iam attach-role-policy \
+  	--role-name ecsTaskExecutionRole \
+  	--policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy)
+	$(aws ecs register-task-definition --cli-input-json file://docker//task-def.json)
+	$(aws ecs create-service \
+  	--cluster my-cluster \
+  	--service-name my-service \
+  	--task-definition my-task \
+  	--desired-count 1 \
+  	--launch-type FARGATE \
+  	--network-configuration "awsvpcConfiguration={subnets=[subnet-xxxxxx],securityGroups=[sg-xxxxxx],assignPublicIp=ENABLED}")
+
+
+
+## $(aws iam create-role \
+## --role-name ecsTaskExecutionRole \
+## --assume-role-policy-document file://ecs-trust-policy.json)
+
