@@ -101,7 +101,7 @@ push-docker-image:
   	--policy-arn arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy)
 	$(aws ecs register-task-definition --cli-input-json file://docker//task-def.json)
 	$(aws ecs create-service \
-  	--cluster my-cluster \
+  	--cluster my-general-cluster \
   	--service-name my-service \
   	--task-definition my-task \
   	--desired-count 1 \

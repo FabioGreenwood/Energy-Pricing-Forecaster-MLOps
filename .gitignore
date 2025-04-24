@@ -1,6 +1,7 @@
 # Manual Additions
 local-files/
 data/output.csv
+Energy-Pricing-Forecaster-MLOps.code-workspace
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
